@@ -12,6 +12,7 @@ namespace Arrowgene.Ddon.GameServer.Handler
     public class InstanceGetEnemySetListHandler : GameRequestPacketHandler<C2SInstanceGetEnemySetListReq, S2CInstanceGetEnemySetListRes>
     {
         private static readonly ServerLogger Logger = LogProvider.Logger<ServerLogger>(typeof(InstanceGetEnemySetListHandler));
+        private static readonly byte defaultPosIndex = 255;
 
         // Order in list indicates priority where first item has highest priority and last item has least.
         private readonly List<IEnemySetGenerator> EnemySetGenerators = new List<IEnemySetGenerator>()
@@ -20,7 +21,7 @@ namespace Arrowgene.Ddon.GameServer.Handler
             new EpitaphRoadEnemySetGenerator(),
             new CautionSpotEnemyGenerator(),
             new WorldEnemySetGenerator(),
-        };
+        }; 
 
         public InstanceGetEnemySetListHandler(DdonGameServer server) : base(server)
         {
@@ -52,8 +53,13 @@ namespace Arrowgene.Ddon.GameServer.Handler
                 }
             }
 
-            for (var i = 0; i < instancedEnemyList.Count; i++)
-            {
+            for (var i = 0; i < instancedEnemyList.Count; i++){
+            
+                if(instancedEnemyList[i].Index == defaultPosIndex)
+                {
+                    instancedEnemyList[i].Index = (byte) i;
+                }
+
                 var enemy = client.Party.InstanceEnemyManager.GetInstanceEnemy(stageLayoutId, instancedEnemyList[i].Index);
                 if (enemy == null)
                 {

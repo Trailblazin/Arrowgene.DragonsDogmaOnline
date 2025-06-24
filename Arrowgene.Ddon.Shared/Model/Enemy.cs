@@ -44,6 +44,7 @@ namespace Arrowgene.Ddon.Shared.Model
         public uint Id { get; set; }
 
         public uint EnemyId { get; set; }
+        public byte PositionIndex { get; set; }
         public NamedParam NamedEnemyParams { get; set; }
         public uint RaidBossId { get; set; }
         public ushort Scale { get; set; } // Scale as a percentage, 100(%) is normal

@@ -18,9 +18,11 @@ namespace Arrowgene.Ddon.Shared.AssetReader
         // instead.
         private static uint EXP_PER_PP = 7500;
 
+        private static readonly byte defaultPosIndex= 255;
+
         private static readonly ILogger Logger = LogProvider.Logger(typeof(EnemySpawnAssetDeserializer));
 
-        private static readonly string[] ENEMY_HEADERS = new string[]{"StageId", "LayerNo", "GroupId", "SubGroupId", "EnemyId", "NamedEnemyParamsId", "RaidBossId", "Scale", "Lv", "HmPresetNo", "StartThinkTblNo", "RepopNum", "RepopCount", "EnemyTargetTypesId", "MontageFixNo", "SetType", "InfectionType", "IsBossGauge", "IsBossBGM", "IsManualSet", "IsAreaBoss", "IsBloodOrbEnemy", "BloodOrbs", "IsHighOrbEnemy", "HighOrbs", "Experience", "DropsTableId", "SpawnTime", "PPDrop"};
+        private static readonly string[] ENEMY_HEADERS = new string[]{"StageId", "LayerNo", "GroupId", "SubGroupId", "PositionIndex", "EnemyId", "NamedEnemyParamsId", "RaidBossId", "Scale", "Lv", "HmPresetNo", "StartThinkTblNo", "RepopNum", "RepopCount", "EnemyTargetTypesId", "MontageFixNo", "SetType", "InfectionType", "IsBossGauge", "IsBossBGM", "IsManualSet", "IsAreaBoss", "IsBloodOrbEnemy", "BloodOrbs", "IsHighOrbEnemy", "HighOrbs", "Experience", "DropsTableId", "SpawnTime", "PPDrop"};
         private static readonly string[] DROPS_TABLE_HEADERS = new string[]{"ItemId", "ItemNum", "MaxItemNum", "Quality", "IsHidden", "DropChance"};
 
         private Dictionary<uint, NamedParam> namedParams;
@@ -94,6 +96,8 @@ namespace Arrowgene.Ddon.Shared.AssetReader
                 Enemy enemy = new Enemy()
                 {
                     EnemyId = ParseHexUInt(row[enemySchemaIndexes["EnemyId"]].GetString()),
+                    //Check that PositionIndex is in file schema
+                    PositionIndex = ParsePositionIndex(row, enemySchemaIndexes["PositionIndex"]),
                     NamedEnemyParams = this.namedParams.GetValueOrDefault(row[enemySchemaIndexes["NamedEnemyParamsId"]].GetUInt32(), NamedParam.DEFAULT_NAMED_PARAM),
                     RaidBossId = row[enemySchemaIndexes["RaidBossId"]].GetUInt32(),
                     Scale = row[enemySchemaIndexes["Scale"]].GetUInt16(),
@@ -195,6 +199,17 @@ namespace Arrowgene.Ddon.Shared.AssetReader
         {
             str = str.TrimStart('0', 'x');
             return uint.Parse(str, NumberStyles.HexNumber, null);
+        }
+
+        private byte ParsePositionIndex(List<JsonElement> row, int index)
+        {
+            // If Position Index nondef in file schema
+            if(index == -1)
+            {
+                return defaultPosIndex;
+            }  
+            //If defined, get that value
+            return row[index].GetByte();
         }
     }
 }

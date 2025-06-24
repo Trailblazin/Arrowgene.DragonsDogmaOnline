@@ -19,7 +19,7 @@ namespace Arrowgene.Ddon.Shared.Model
         public InstancedEnemy(InstancedEnemy enemy) : base (enemy)
         {
             IsKilled = false;
-            Index = enemy.Index;
+            Index = enemy.PositionIndex;
             IsRequired = enemy.IsRequired;
             RepopWaitSecond = enemy.RepopWaitSecond;
             StageLayoutId = enemy.StageLayoutId;
