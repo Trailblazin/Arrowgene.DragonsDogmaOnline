@@ -32,5 +32,4 @@ mkdir .\release
     )
 ))
 REM keep console open
-git 
 cmd
